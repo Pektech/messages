@@ -13,13 +13,17 @@ class User(db.Model):
 
     family = db.relationship('Family', backref='user', lazy=True)
 
-
+    def __repr__(self):
+        return '<Alexa {}>'.format(self.alexa_id)
 
 class Family(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(120))
     messages = db.relationship('Messages', backref='family', lazy=True)
+
+    def __repr__(self):
+        return '<member : {}>'.format(self.name)
 
 
 class Messages(db.Model):
