@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.sql import expression
 
 
 
@@ -14,6 +15,8 @@ class User(db.Model):
 
     def __repr__(self):
         return '<Alexa {}>'.format(self.alexa_id)
+
+
 
 class Family(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,6 +37,8 @@ class Messages(db.Model):
     from_id = db.Column(db.Integer, db.ForeignKey('family.id'))
     message = db.Column(db.Text(280))
     to_id = db.Column(db.Integer,db.ForeignKey('family.id'))
+    deleted_flag = db.Column(db.Boolean, nullable=False)
+
     show = association_proxy('messages','message')
 
 
