@@ -1,26 +1,70 @@
-from app import ask, db
+from app import ask, db, sup, app
 from .models import User, Family, Messages
-from flask_ask import statement, question
-from flask_ask import session as ask_session, request as ask_request, context
-
+from flask_ask import statement, question, context, delegate
+from flask_ask import session as ask_session, request as ask_request
+from flask import render_template
+from sqlalchemy import func
 import logging
 
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
 
-@ask.launch
-def start_skill():
-    welcome_message = 'Welcome to family messages. Will you tell me your name?'
-    reprompt_text = 'If you tell me your name I can see if there are any ' \
-                    'messages for you or you can leave a message for ' \
-                    'someone else'
-    ask_session.attributes['last_speech'] = reprompt_text
-    ask_session.attributes['stage'] = 'start'
-    return question(welcome_message).reprompt(reprompt_text)
+@ask.on_session_started
+@sup.start
+def new_session():
+    app.logger.debug('new user session started')
 
-@ask.intent('TellName')
-def name(name):
-    print(name)
+
+@sup.stop
+def close_user_session():
+    app.logger.debug("user session stopped")
+
+
+@ask.session_ended
+def session_ended():
+    close_user_session()
+    return '', 200
+
+@ask.intent('AMAZON.HelpIntent')
+def help_user():
+    context_help = sup.get_help()
+    return question(context_help)
+
+
+
+
+@ask.launch
+@sup.guide
+def launched():
+    ask_session.attributes['stage'] = 'start'
+    ask_session.attributes['alexa_id'] = '999' #hardcoded just for testing
+    return question(render_template('welcome'))
+
+@ask.intent('SayName')
+@sup.guide
+def from_name(from_name):
+
+    ask_session.attributes['from_name'] = from_name
+    return question(render_template('name', name=from_name))
+
+
+
+
+@ask.intent('CheckMessages')
+@sup.guide
+def check_msg():
+    from_name = ask_session.attributes['from_name']
+    alexa_id = ask_session.attributes['alexa_id']
+    my_family = User.query.filter_by(alexa_id=alexa_id).first()
+    my_id = Family.query.filter(User.id==my_family.id,
+                                Family.name==from_name).first()
+
+    my_msg_list = Messages.query.filter(Messages.to_id== my_id.user_id,
+                                        Messages.deleted_flag == False).all()
+
+    print(len(my_msg_list))
+    return question(render_template('check_msg', name=from_name,
+                                    count_msg=len(my_msg_list)))
 
 
 def save_msg(msg, from_name, to_name):

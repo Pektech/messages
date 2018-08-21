@@ -1,0 +1,11 @@
+welcome: "Welcome to Family Messages. Will you please tell me your name?"
+
+name: "Thank you {{ name }}. Would you like to check messages or leave a message?"
+
+check_msg: "Okay {{ name }} you have {{ count_msg }} messages?"
+
+drink_ready: "Ok, your {{ amount }} {{ drink }} will be ready soon"
+
+stop: "See you later"
+
+cancel: "You interrupted the skill, bye"
