@@ -1,0 +1,4 @@
+{
+  "app/tests/test_userstory.py": true,
+  "app/tests/unit/test_models.py::test_new_user": true
+}

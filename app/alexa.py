@@ -1,10 +1,26 @@
 from app import ask, db
 from .models import User, Family, Messages
+from flask_ask import statement, question
+from flask_ask import session as ask_session, request as ask_request, context
+
+import logging
+
+logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
 
+@ask.launch
+def start_skill():
+    welcome_message = 'Welcome to family messages. Will you tell me your name?'
+    reprompt_text = 'If you tell me your name I can see if there are any ' \
+                    'messages for you or you can leave a message for ' \
+                    'someone else'
+    ask_session.attributes['last_speech'] = reprompt_text
+    ask_session.attributes['stage'] = 'start'
+    return question(welcome_message).reprompt(reprompt_text)
 
-
-
+@ask.intent('TellName')
+def name(name):
+    print(name)
 
 
 def save_msg(msg, from_name, to_name):
