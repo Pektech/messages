@@ -32,7 +32,7 @@ steps:
        But nobody like anonymous messages"
     events:
       # event trigger #1
-      from_name:
+      my_name:
       # where to move from here?
         next: check_or_save
       # event trigger #2
@@ -42,8 +42,7 @@ steps:
   check_or_save:
     reprompt:
       - "Sorry I need to know if you want to check your messages or leave one"
-      - "hmmm if you say check messages I can check them for you or if you say leave message
-      I'll make sure it gets to the right person"
+      - "hmmm if you say check messages I can check them for you or if you say leave message, I'll make sure it gets to the right person"
     help:
       - "You need to decide wether to check messages or leave a message. Say: Name  or Leave message"
       - "Just say: Name or leave message"
@@ -51,14 +50,21 @@ steps:
       # event trigger #1
       check_msg:
       #where to move from here?
-        next: done
+        next: continue
       # event trigger 2
       leave_msg:
         next : done
 
 
 
-
+  continue:
+    reprompt:
+      - "asking continue"
+    help:
+      - "wants yes or no"
+    events:
+      yesno:
+        next: done
 
 #  coffee_strength_choice:
 #    reprompt:

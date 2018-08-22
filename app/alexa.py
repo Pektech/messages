@@ -4,6 +4,7 @@ from flask_ask import statement, question, context, delegate
 from flask_ask import session as ask_session, request as ask_request
 from flask import render_template
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 import logging
 
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
@@ -26,6 +27,7 @@ def session_ended():
     return '', 200
 
 @ask.intent('AMAZON.HelpIntent')
+@sup.guide
 def help_user():
     context_help = sup.get_help()
     return question(context_help)
@@ -42,10 +44,27 @@ def launched():
 
 @ask.intent('SayName')
 @sup.guide
-def from_name(from_name):
+def my_name(name):
+    if name is None:
+        return sup.reprompt_error("I really need your name")
+    my_name = name.capitalize()
+    ask_session.attributes['my_name'] = my_name
+    alexa_id = ask_session.attributes['alexa_id']
+    #check if name in alexa_id family
+    in_family = Family.query.filter(User.alexa_id==alexa_id,
+                                        Family.name==my_name).first()
+    if in_family is None:
+        try:
+            my_family = User.query.filter_by(alexa_id=alexa_id).first()
+            add_name = Family(name=my_name, user_id=my_family.id)
+            db.session.add(add_name)
+            db.session.commit()
+            print('added new family memeber')
+        except SQLAlchemyError as e:
+            db.session.rollback()
 
-    ask_session.attributes['from_name'] = from_name
-    return question(render_template('name', name=from_name))
+            print(e)
+    return question(render_template('name', my_name=my_name))
 
 
 
@@ -53,18 +72,27 @@ def from_name(from_name):
 @ask.intent('CheckMessages')
 @sup.guide
 def check_msg():
-    from_name = ask_session.attributes['from_name']
+    my_name = ask_session.attributes['my_name']
     alexa_id = ask_session.attributes['alexa_id']
     my_family = User.query.filter_by(alexa_id=alexa_id).first()
     my_id = Family.query.filter(User.id==my_family.id,
-                                Family.name==from_name).first()
+                                Family.name==my_name).first()
 
-    my_msg_list = Messages.query.filter(Messages.to_id== my_id.user_id,
+    my_msg_list = Messages.query.filter(Messages.to_id== my_id.id,
                                         Messages.deleted_flag == False).all()
 
-    print(len(my_msg_list))
-    return question(render_template('check_msg', name=from_name,
-                                    count_msg=len(my_msg_list)))
+    if len(my_msg_list) == 0:
+        return question(render_template('no messages'), my_name=my_name)
+    return question(render_template('check_msg', name=my_name,
+                                    count_msg=len(my_msg_list),
+                                    my_msg_list=my_msg_list))
+
+@ask.intent('AMAZON.YesIntent')
+@sup.guide
+def yesno():
+    sup_state = sup.get_current_state()
+    print(sup_state)
+
 
 
 def save_msg(msg, from_name, to_name):

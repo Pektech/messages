@@ -23,13 +23,13 @@ class Family(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     name = db.Column(db.String(120))
     mess_to = db.relationship('Messages',foreign_keys='Messages.to_id',
-                               backref='fam_sent', lazy=True)
-    mess_from = db.relationship('Messages',foreign_keys='Messages.from_id',
                                backref='fam_to', lazy=True)
+    mess_from = db.relationship('Messages',foreign_keys='Messages.from_id',
+                               backref='fam_sent', lazy=True)
     show = association_proxy('mess_to', 'message')
 
     def __repr__(self):
-        return '<member : {}>'.format(self.name)
+        return '{}'.format(self.name)
 
 
 class Messages(db.Model):
