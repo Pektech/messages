@@ -1,10 +1,5 @@
-from app import db
+from app import db, ma
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.sql import expression
-
-
-
-
 
 
 class User(db.Model):
@@ -32,6 +27,8 @@ class Family(db.Model):
         return '{}'.format(self.name)
 
 
+
+
 class Messages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     from_id = db.Column(db.Integer, db.ForeignKey('family.id'))
@@ -41,5 +38,11 @@ class Messages(db.Model):
 
     show = association_proxy('messages','message')
 
+    # def as_dict(self):
+    #     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class MessagesSchema(ma.ModelSchema):
+    class Meta:
+        model = Messages
 
 

@@ -50,14 +50,14 @@ steps:
       # event trigger #1
       check_msg:
       #where to move from here?
-        next: continue
+        next: test
       # event trigger 2
       leave_msg:
         next : done
 
 
 
-  continue:
+  test:
     reprompt:
       - "asking continue"
     help:
