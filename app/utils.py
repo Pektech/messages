@@ -1,5 +1,5 @@
 from flask import json
-from .models import User, Family, Messages
+from .models import User, Family, Messages, MessagesSchema
 
 def test():
     my_name = "Sam"
@@ -15,11 +15,19 @@ def test():
     return test_json
 
 
-def next_msg(next):
-    test = [{'fam_sent': 1, 'deleted_flag': False, 'fam_to': 2, 'message': 'werewoves and vamps', 'id': 5}, {'fam_sent': 1, 'deleted_flag': False, 'fam_to': 2, 'message': 'Want me to bring home pie?', 'id': 2}, {'fam_sent': 1, 'deleted_flag': False, 'fam_to': 2, 'message': 'hey just off to the library', 'id': 1}]
+def next_msg(order, msg_num=1):
+    dean = Messages.query.filter_by(to_id=2).all()
+    msg_all = MessagesSchema(many=True)
+    dean_result = msg_all.dump(dean)
+    test=dean_result
 
-    msg_num = 0
-    first_msg = test[0]['message']
-    if next == 'next' and msg_num <= len(test.data):
-        next_msg  = test[msg_num + 1]['message']
+
+    current_msg = test.data[msg_num]['message']
+    if order == 'next' and msg_num <= len(test.data):
+        next_msg  = test.data[msg_num + 1]['message']
         print(next_msg)
+        current_msg = next_msg
+    elif order == 'next' and msg_num > len(test.data):
+        print('end of messages')
+    if order == 'repeat':
+        print(current_msg)

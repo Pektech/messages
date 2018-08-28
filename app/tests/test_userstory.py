@@ -2,7 +2,7 @@ from .unit.test_models import *
 from .conftest import *
 
 # New user 'Sam' opens skill with 'open family messages'
-#
+
 # Alexa responds 'welcome to family messages. will you tell me your name?'
 # Sam : 'Sam'
 # Alexa checks to see if there are any messages for Sam:
