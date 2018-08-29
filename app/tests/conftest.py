@@ -1,4 +1,6 @@
+import sys
 import pytest
+
 
 from app.models import User
 
@@ -9,7 +11,20 @@ from app.models import User
 #     return user
 
 
+
+
 @pytest.fixture(scope='module')
 def new_user():
     user = User(alexa_id='999')
     return user
+
+
+import pytest
+import os
+import messages
+
+
+@pytest.fixture
+def app():
+    return messages.app
+
