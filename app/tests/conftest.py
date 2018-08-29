@@ -28,3 +28,8 @@ import messages
 def app():
     return messages.app
 
+
+@pytest.fixture(scope='module')
+def init_database():
+    pass
+
