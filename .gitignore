@@ -3,3 +3,4 @@ venv/
 __pycache__/
 zappa_settings.json
 .pytest_cache/
+test_db.db

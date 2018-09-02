@@ -19,7 +19,7 @@ config_name = os.getenv('FLASK_ENV', 'default')
 
 app = Flask(__name__)
 app.config.from_object(config[config_name])
-
+print(config_name)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 ask = Ask(app, '/')

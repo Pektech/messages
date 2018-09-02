@@ -9,14 +9,17 @@ class Config(object):
                               'sqlite:///' + os.path.join(basedir,
                                                           'messages.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    FLASK_DEBUG=0
+    DEBUG = False
 
 
 class DevConfig(Config):
+    FLASK_DEBUG = 0
     DEBUG = True
-
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir,
                                                           'test_db.db')
+
     TESTING = True
     DEBUG = True
