@@ -1,9 +1,14 @@
 import sys
 import pytest
-
-
+import os
+import messages
+from app import db as _db
+from sqlalchemy import event
+from sqlalchemy.orm import sessionmaker
 from app.models import User
 
+
+os.environ["FLASK_ENV"] = 'testing'
 #this is where we set up pytest fixtures
 # @pytest.fixture(scope='module')
 # def new_user():
@@ -19,12 +24,8 @@ def new_user():
     return user
 
 
-import pytest
-import os
-import messages
-from app import db as _db
-from sqlalchemy import event
-from sqlalchemy.orm import sessionmaker
+
+
 
 @pytest.fixture(scope='session')
 def app(request):
