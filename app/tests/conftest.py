@@ -2,7 +2,7 @@ import sys
 import pytest
 import os
 import messages
-from app import db as _db
+from app import db as _db , sup as _sup
 from sqlalchemy import event
 from sqlalchemy.orm import sessionmaker
 from app.models import User
@@ -23,13 +23,17 @@ def new_user():
     user = User(alexa_id='999')
     return user
 
-
+@pytest.fixture(scope='session')
+def suptest():
+    @_sup.start
+    def new_session():
+        app.logger.debug('new user session started')
 
 
 
 @pytest.fixture(scope='session')
-def app(request):
-    os.environ["FLASK_ENV"] = 'testing'
+def app():
+
     return messages.app
 
 

@@ -23,3 +23,4 @@ class TestConfig(Config):
 
     TESTING = True
     DEBUG = True
+    ASK_VERIFY_REQUESTS = False
