@@ -20,6 +20,9 @@ config_name = os.getenv('FLASK_ENV', 'default')
 app = Flask(__name__)
 app.config.from_object(config[config_name])
 print(config_name)
+if config_name == 'testing':
+    app.config['ASK_VERIFY_REQUESTS'] = False
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 ask = Ask(app, '/')
