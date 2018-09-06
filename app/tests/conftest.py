@@ -43,7 +43,7 @@ def db(app, request):
     Returns session-wide initialised database.
     """
     with app.app_context():
-        _db.drop_all()
+        #_db.drop_all()
         _db.create_all()
 
 
