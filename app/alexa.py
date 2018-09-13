@@ -86,15 +86,22 @@ def check_msg():
     msg_schema = MessagesSchema(many=True)
     msg_result = msg_schema.dump(my_msg_list)
     ask_session.attributes['my_msg_list'] = msg_result.data
+    ask_session.attributes['msg_num'] = 0
     return question(render_template('check_msg', name=my_name,
                                     count_msg=len(my_msg_list),
                                     my_msg_list=my_msg_list))
 
 
 @ask.intent('NextMsg')
-def test():
-    test = ask_session.attributes['my_msg_list']
-    print(test[1]['message'])
+def next_msg():
+    my_msg_list = ask_session.attributes['my_msg_list']
+    msg_num = ask_session.attributes['msg_num'] +1
+    if msg_num > len(my_msg_list) -1:
+        return question(render_template('end_of_messages'))
+    else:
+        ask_session.attributes['msg_num'] = msg_num
+        return question(render_template('next_msg', my_msg_list=my_msg_list,
+                                    msg_num=msg_num))
 
 
 @ask.intent('AMAZON.YesIntent')

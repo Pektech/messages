@@ -2,7 +2,7 @@ import sys
 import pytest
 import os
 import messages
-from app import db as _db , sup as _sup
+from app import db as _db , sup
 from sqlalchemy import event
 from sqlalchemy.orm import sessionmaker
 from app.models import User
@@ -25,15 +25,14 @@ def new_user():
 
 @pytest.fixture(scope='session')
 def suptest():
-    @_sup.start
+    @sup.start
     def new_session():
-        app.logger.debug('new user session started')
+        app.logger.debug('Hey pek, a new user session started')
 
 
 
 @pytest.fixture(scope='session')
 def app():
-
     return messages.app
 
 
@@ -43,7 +42,7 @@ def db(app, request):
     Returns session-wide initialised database.
     """
     with app.app_context():
-        _db.drop_all()
+        #_db.drop_all()
         _db.create_all()
 
 

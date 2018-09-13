@@ -9,6 +9,9 @@ check_msg: '''Okay {{ my_name }} you have {{ count_msg }} messages. First messag
 no_messages: '''Sorry {{ my_name }} there are no messages for you.
  Would you like to leave a message?'''
 
+next_msg: '{{ my_msg_list[msg_num].message}}'
+
+end_of_messages: "That was the last message. Would you like to leave a message?"
 
 drink_ready: "Ok, your {{ amount }} {{ drink }} will be ready soon"
 

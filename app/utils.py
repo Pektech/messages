@@ -15,19 +15,30 @@ def test():
     return test_json
 
 
-def next_msg(order, msg_num=1):
+def next_msg(msg_num=1):
     dean = Messages.query.filter_by(to_id=2).all()
     msg_all = MessagesSchema(many=True)
     dean_result = msg_all.dump(dean)
     test=dean_result
 
+    run = True
+    while run:
+        order = input('command')
+        if msg_num > len(test.data):
+            return ('end of messages')
+        else:
+            current_msg = test.data[msg_num]['message']
 
-    current_msg = test.data[msg_num]['message']
-    if order == 'next' and msg_num <= len(test.data):
-        next_msg  = test.data[msg_num + 1]['message']
-        print(next_msg)
-        current_msg = next_msg
-    elif order == 'next' and msg_num > len(test.data):
-        print('end of messages')
-    if order == 'repeat':
-        print(current_msg)
+        if order == 'next' and msg_num < len(test.data):
+            next_msg = test.data[msg_num]['message']
+            msg_num += 1
+
+
+
+            print(next_msg)
+        elif order == 'next' and msg_num > len(test.data):
+            print('end of messages')
+        if order == 'repeat':
+            print(current_msg)
+        if order =='stop':
+            run = False
