@@ -39,7 +39,9 @@ def help_user():
 def launched():
     ask_session.attributes['stage'] = 'start'
     ask_session.attributes['alexa_id'] = '999'  # hardcoded just for testing
-    return question(render_template('welcome'))
+    output = render_template('welcome')
+    ask_session.attributes['last_speech'] = output
+    return question(output)
 
 
 @ask.intent('SayName')
@@ -64,7 +66,9 @@ def my_name(name):
             db.session.rollback()
 
             print(e)
-    return question(render_template('name', my_name=my_name))
+    output = render_template('name', my_name=my_name)
+    ask_session.attributes['last_speech'] = output
+    return question(output)
 
 
 @ask.intent('CheckMessages')
@@ -79,17 +83,20 @@ def check_msg():
     my_msg_list = Messages.query.filter(Messages.to_id == my_id.id,
                                         Messages.deleted_flag == False) \
         .order_by(Messages.id.desc()).all()
-    print(my_msg_list)
     if len(my_msg_list) == 0:
-        return question(render_template('no_messages', my_name=my_name))
+        output = render_template('no_messages', my_name=my_name)
+        ask_session.attributes['last_speech'] = output
+        return question(output)
     # jsonify my_msg_list to store in alexa attributes
     msg_schema = MessagesSchema(many=True)
     msg_result = msg_schema.dump(my_msg_list)
     ask_session.attributes['my_msg_list'] = msg_result.data
     ask_session.attributes['msg_num'] = 0
-    return question(render_template('check_msg', name=my_name,
+    output = render_template('check_msg', name=my_name,
                                     count_msg=len(my_msg_list),
-                                    my_msg_list=my_msg_list))
+                                    my_msg_list=my_msg_list)
+    ask_session.attributes['last_speech'] = output
+    return question(output)
 
 
 @ask.intent('NextMsg')
@@ -97,11 +104,15 @@ def next_msg():
     my_msg_list = ask_session.attributes['my_msg_list']
     msg_num = ask_session.attributes['msg_num'] +1
     if msg_num > len(my_msg_list) -1:
-        return question(render_template('end_of_messages'))
+        output = render_template('end_of_messages')
+        ask_session.attributes['last_speech'] = output
+        return question(output)
     else:
         ask_session.attributes['msg_num'] = msg_num
-        return question(render_template('next_msg', my_msg_list=my_msg_list,
-                                    msg_num=msg_num))
+        output = render_template('next_msg', my_msg_list=my_msg_list,
+                                    msg_num=msg_num)
+        ask_session.attributes['last_speech'] = output
+        return question(output)
 
 
 @ask.intent('AMAZON.YesIntent')
@@ -110,6 +121,12 @@ def yesno():
     sup_state = sup.get_current_state()
     print(sup_state)
 
+
+
+@ask.intent('AMAZON.RepeatIntent')
+def repeat():
+    repeat_speech = ask_session.attributes['last_speech']
+    return question(repeat_speech)
 
 def save_msg(msg, from_name, to_name):
     ''' will be converted into an intent - Saves message details to db'''
