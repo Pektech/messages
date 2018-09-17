@@ -6,8 +6,7 @@ check_msg: '''Okay {{ my_name }} you have {{ count_msg }} messages. First messag
 {{my_msg_list[0].fam_sent}}. The message is {{ my_msg_list[0].message }}. Say next to hear
  more, or Repeat to hear again or Leave message to well leave a message'''
 
-no_messages: '''Sorry {{ my_name }} there are no messages for you.
- Would you like to leave a message?'''
+no_messages: "Sorry {{ my_name }} there are no messages for you. Would you like to leave a message?"
 
 next_msg: '{{ my_msg_list[msg_num].message}}'
 
