@@ -68,7 +68,7 @@ def my_name(name):
 
 
 @ask.intent('CheckMessages')
-@sup.guide
+#@sup.guide
 def check_msg():
     my_name = ask_session.attributes['my_name']
     alexa_id = ask_session.attributes['alexa_id']
@@ -79,9 +79,9 @@ def check_msg():
     my_msg_list = Messages.query.filter(Messages.to_id == my_id.id,
                                         Messages.deleted_flag == False) \
         .order_by(Messages.id.desc()).all()
-
+    print(my_msg_list)
     if len(my_msg_list) == 0:
-        return question(render_template('no messages', my_name=my_name))
+        return question(render_template('no_messages', my_name=my_name))
     # jsonify my_msg_list to store in alexa attributes
     msg_schema = MessagesSchema(many=True)
     msg_result = msg_schema.dump(my_msg_list)

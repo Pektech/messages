@@ -52,21 +52,21 @@ steps:
       # event trigger #1
       check_msg:
       #where to move from here?
-        next: next_msg
+        next: check_msg
       # event trigger 2
       leave_msg:
         next : done
 
 
 
-  next_msg:
+  check_msg:
     reprompt:
       - "asking continue"
     help:
       - "wants yes or no"
     events:
       next_msg:
-        next: next_msg
+        next: done
       yesno:
         next: done
 
