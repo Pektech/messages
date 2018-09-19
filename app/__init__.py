@@ -8,6 +8,9 @@ from flask_ask import Ask
 from afg import Supervisor
 from flask_marshmallow import Marshmallow
 
+
+
+
 config = {
     "dev": "config.DevConfig",
     "testing": "config.TestConfig",

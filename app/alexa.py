@@ -1,6 +1,6 @@
 from app import app, ask, db, sup, ma
 from .models import User, Family, Messages
-from flask_ask import question
+from flask_ask import question, delegate
 from flask_ask import session as ask_session
 from flask import render_template
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,6 +8,7 @@ import logging
 from .models import MessagesSchema
 
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
+
 
 
 @ask.on_session_started
@@ -61,7 +62,7 @@ def my_name(name):
             add_name = Family(name=my_name, user_id=my_family.id)
             db.session.add(add_name)
             db.session.commit()
-            print('added new family memeber')
+            print('added new family member')
         except SQLAlchemyError as e:
             db.session.rollback()
 
@@ -128,22 +129,52 @@ def repeat():
     repeat_speech = ask_session.attributes['last_speech']
     return question(repeat_speech)
 
-def save_msg(msg, from_name, to_name):
+
+
+def msg_for(to_name):
+    ask_session.attributes['msg_for'] = to_name
+    dialog_state = ask_session['dialogState']
+    if dialog_state != "COMPLETED":
+        return delegate()
+    output = render_template('message_for', msg_for = to_name)
+    return question('PEK')
+
+
+@ask.intent('LeaveMessage')
+def save_msg(msg, to_name):
     ''' will be converted into an intent - Saves message details to db'''
-    alexa = '999'  # would need to pull from intent atributes
-    family_id = User.query.filter_by(alexa_id=alexa).first()
-    came_from = Family.query.filter(Family.user_id == family_id.id,
-                                    Family.name == from_name).first()
-    goes_to = Family.query.filter(Family.user_id == family_id.id,
-                                  Family.name == to_name).first()
-    text = Messages(from_id=came_from.id, message=msg, to_id=goes_to.id)
-    try:
-        db.session.add(text)
-        db.session.commit()
-        print('msg added')
-    except:
-        db.session.rollback()
-        print('something went wrong')
+    alexa_id = '999'  # would need to pull from intent atributes
+    #alexa_id = ask_session.attributes['alexa_id']
+    #my_name = ask_session.attributes['my_name']
+    if msg is None or to_name is None:
+        return delegate()
+    #check if to_name is already in family if not add
+    in_family = Family.query.filter(User.alexa_id == alexa_id,
+                                    Family.name == to_name).first()
+    if in_family is None:
+        try:
+            my_family = User.query.filter_by(alexa_id=alexa_id).first()
+            add_name = Family(name=to_name, user_id=my_family.id)
+            db.session.add(add_name)
+            db.session.commit()
+            print('added new family member')
+        except SQLAlchemyError as e:
+            db.session.rollback()
+
+            print(e)
+    # family_id = User.query.filter_by(alexa_id=alexa).first()
+    # came_from = Family.query.filter(Family.user_id == family_id.id,
+    #                                 Family.name == my_name).first()
+    # goes_to = Family.query.filter(Family.user_id == family_id.id,
+    #                               Family.name == to_name).first()
+    # text = Messages(from_id=came_from.id, message=msg, to_id=goes_to.id)
+    # try:
+    #     db.session.add(text)
+    #     db.session.commit()
+    #     print('msg added')
+    # except:
+    #     db.session.rollback()
+    #     print('something went wrong')
 
 
 def delete_msg(msg, to_name):

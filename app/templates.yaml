@@ -12,7 +12,7 @@ next_msg: '{{ my_msg_list[msg_num].message}}'
 
 end_of_messages: "That was the last message. Would you like to leave a message?"
 
-drink_ready: "Ok, your {{ amount }} {{ drink }} will be ready soon"
+message_for: "leave a message for  {{ msg_for }} after the beep....  beep"
 
 stop: "See you later"
 
