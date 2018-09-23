@@ -145,6 +145,7 @@ def save_msg(msg, to_name):
     ''' will be converted into an intent - Saves message details to db'''
     alexa_id = '999'  # would need to pull from intent atributes
     #alexa_id = ask_session.attributes['alexa_id']
+    my_name = 'Sam'
     #my_name = ask_session.attributes['my_name']
     if msg is None or to_name is None:
         return delegate()
@@ -162,19 +163,21 @@ def save_msg(msg, to_name):
             db.session.rollback()
 
             print(e)
-    # family_id = User.query.filter_by(alexa_id=alexa).first()
-    # came_from = Family.query.filter(Family.user_id == family_id.id,
-    #                                 Family.name == my_name).first()
-    # goes_to = Family.query.filter(Family.user_id == family_id.id,
-    #                               Family.name == to_name).first()
-    # text = Messages(from_id=came_from.id, message=msg, to_id=goes_to.id)
-    # try:
-    #     db.session.add(text)
-    #     db.session.commit()
-    #     print('msg added')
-    # except:
-    #     db.session.rollback()
-    #     print('something went wrong')
+    family_id = User.query.filter_by(alexa_id=alexa_id).first()
+    came_from = Family.query.filter(Family.user_id == family_id.id,
+                                     Family.name == my_name).first()
+    goes_to = Family.query.filter(Family.user_id == family_id.id,
+                                   Family.name == to_name).first()
+    text = Messages(from_id=came_from.id, message=msg, to_id=goes_to.id,
+                    deleted_flag=False)
+    try:
+        db.session.add(text)
+        db.session.commit()
+        print('msg added')
+        return question("Message saved. would you like to leave another?")
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        print(e)
 
 
 def delete_msg(msg, to_name):
@@ -182,7 +185,7 @@ def delete_msg(msg, to_name):
     alexa = '999'  # would need to pull from intent atributes
     family_id = User.query.filter_by(alexa_id=alexa).first()
     came_from = Family.query.filter(Family.user_id == family_id.id,
-                                    Family.name == from_name).first()
+                                    Family.name == my_name).first()
     goes_to = Family.query.filter(Family.user_id == family_id.id,
                                   Family.name == to_name).first()
     text = Messages(from_id=came_from.id, message=msg, to_id=goes_to.id)

@@ -1,5 +1,6 @@
 import sys
 import pytest
+from unittest.mock import MagicMock
 import os
 import messages
 from app import db as _db , sup
@@ -16,7 +17,10 @@ os.environ["FLASK_ENV"] = 'testing'
 #     return user
 
 
-
+@pytest.fixture(scope='session')
+def fake_session():
+    ask_session = MagicMock(attributes={'alexa_id': '999'})
+    return ask_session
 
 @pytest.fixture(scope='module')
 def new_user():
