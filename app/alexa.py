@@ -143,12 +143,13 @@ def msg_for(to_name):
 @ask.intent('LeaveMessage')
 def save_msg(msg, to_name):
     ''' will be converted into an intent - Saves message details to db'''
-    alexa_id = '999'  # would need to pull from intent atributes
-    #alexa_id = ask_session.attributes['alexa_id']
-    my_name = 'Sam'
-    #my_name = ask_session.attributes['my_name']
+    #alexa_id = '999'  # would need to pull from intent atributes
+    alexa_id = ask_session.attributes['alexa_id']
+    #my_name = 'Sam'
+    my_name = ask_session.attributes['my_name']
     if msg is None or to_name is None:
         return delegate()
+    to_name = to_name.capitalize()
     #check if to_name is already in family if not add
     in_family = Family.query.filter(User.alexa_id == alexa_id,
                                     Family.name == to_name).first()

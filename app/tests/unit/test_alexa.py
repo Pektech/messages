@@ -59,3 +59,10 @@ def test_verify_is_off(app):
     app.config['ASK_VERIFY_REQUESTS'] = False
 
     assert app.config['ASK_VERIFY_REQUESTS'] == False
+
+
+def test_alexa_leave_message(client):
+    result = client.post('/', data=json.dumps(fake_leave_msg))
+    data = json.loads(result.data.decode('utf-8'))
+    pass
+    #test db takes msg properly

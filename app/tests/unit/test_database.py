@@ -1,8 +1,8 @@
 from app.models import User, Messages, Family
-from app.alexa import save_msg
+from app.alexa import save_msg, ask_session
 import pytest
 from app.tests.conftest import fake_session
-from unittest.mock import MagicMock
+from unittest import mock
 
 def test_new_alexa_id(session):
     '''Test that a new test database is set up'''
@@ -14,8 +14,8 @@ def test_new_alexa_id(session):
     assert new_user.alexa_id == 'Monk_echo'
 
 @pytest.mark.usefixtures('session')
-def test_adds_new_family_member():
 
+def test_adds_new_family_member():
     alexa_id = '999'
     my_name = 'Sam'
 
@@ -35,8 +35,12 @@ def test_leaves_message():
             Messages.id.desc()).first()
     assert "need apples" in msg_query.message
 
+# @pytest.mark.usefixtures('session')
+# @mock.patch('app.alexa.ask_session')
+# def test_fake_session(mock_ask):
+#     mock_ask.return_value = {'alexa_id':'9'}
+#     print(mock_ask.attributes)
+#     print(ask_session.attributes)
+#     assert ask_session == mock_ask
 
-@pytest.mark.usefixtures('fake_session')
-def test_fake_session():
-    fake = fake_session()
-    assert fake.attributes['alexa_id'] == '999'
+
